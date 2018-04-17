@@ -193,14 +193,69 @@ GROUP BY p.customer_id
 ORDER BY c.last_name
 ;
 #![Total amount paid](Images/total_payment.png)
-#7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+#7a. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. 
+#Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+#Examine data from Databases film and language
+SELECT *
+FROM film;
 
+SELECT *
+FROM language;
+#Build subquery of English Films with Q and K
+SELECT title
+FROM film
+WHERE language_id IN(
+SELECT language_id
+FROM language 
+WHERE name = ("English") AND title LIKE("K%") OR title LIKE("Q%")
+);
 #7b. Use subqueries to display all actors who appear in the film Alone Trip.
-
+#Search Database Actor and Film and film_actor
+SELECT * 
+FROM actor;
+SELECT * 
+FROM film
+WHERE title = "Alone Trip";
+SELECT * 
+FROM film_actor;
+#Build subquery for actors in Alone Trip
+SELECT last_name
+FROM actor
+WHERE actor_id IN(
+SELECT actor_id
+FROM film_actor
+WHERE film_id IN(
+SELECT film_id
+FROM film
+WHERE film_id = 17
+));
 #7c. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
+#Pull databases of Customers Address, City, Country
+SELECT *
+FROM customer;
+SELECT *
+FROM address;
+SELECT *
+FROM city;
+SELECT *
+FROM country;
 
+SELECT CONCAT(cu.first_name, " ", cu.last_name) AS `Customer`, cu.email, co.country
+FROM customer cu
+INNER JOIN address a
+ON (cu.address_id = a.address_id)
+INNER JOIN city ci
+ON (ci.city_id = a.city_id)
+INNER JOIN country co
+ON (co.country_id=ci.country_id)
+GROUP BY cu.address_id
+HAVING country = "Canada"
+;
 #7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as famiy films.
-
+#Use Views Table called nice_but_slower_film_list
+SELECT title, category
+FROM sakila.nicer_but_slower_film_list
+WHERE category LIKE("%family%");
 #7e. Display the most frequently rented movies in descending order.
 
 #7f. Write a query to display how much business, in dollars, each store brought in.
